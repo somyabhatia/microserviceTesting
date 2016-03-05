@@ -21,18 +21,21 @@ type config struct {
 func main() {
 	log.SetOutput(os.Stderr)
 	var (
-		laddr string
-		c     config
+		listen bool
+		laddr  string
+		c      config
 	)
 
-	flag.StringVar(&laddr, "l", "", "listening address")
+	flag.BoolVar(&listen, "l", false, "listen")
+	flag.StringVar(&laddr, "a", "", "listening address")
 	flag.DurationVar(&c.timeout, "t", 5*time.Second, "connect/send/recv timeout")
 	flag.DurationVar(&c.retryInterval, "r", 1*time.Second, "connection retry interval")
 	flag.DurationVar(&c.sendInterval, "i", 1*time.Second, "message sending interval")
 	flag.Parse()
 	addrs := flag.Args()
 
-	if laddr != "" {
+	if listen {
+		laddr = normalizeAddr(laddr)
 		log.Infof("listening on %s", laddr)
 		ln, err := net.Listen("tcp", laddr)
 		if err != nil {
@@ -42,10 +45,18 @@ func main() {
 	}
 
 	for _, addr := range addrs {
-		go send(addr, c)
+		go send(normalizeAddr(addr), c)
 	}
 
 	select {}
+}
+
+func normalizeAddr(addr string) string {
+	parts := strings.Split(addr, ":")
+	if len(parts) == 1 {
+		return addr + ":8080"
+	}
+	return addr
 }
 
 func accept(ln net.Listener, c config) {
