@@ -71,8 +71,7 @@ func accept(ln net.Listener, c config) {
 }
 
 func recv(conn net.Conn, c config) {
-	addr := remoteAddr(conn)
-	log.Infof("accepted connection from %s", addr)
+	log.Infof("accepted connection from %s", remoteAddr(conn))
 	r := bufio.NewReader(conn)
 	for {
 		conn.SetDeadline(time.Now().Add(c.timeout))
@@ -85,7 +84,7 @@ func recv(conn net.Conn, c config) {
 			log.Errorln(err)
 			break
 		}
-		fmt.Printf("%s --> %s", addr, msg)
+		fmt.Printf("%s --> %s", remoteAddr(conn), msg)
 	}
 	conn.Close()
 }
@@ -99,8 +98,7 @@ func send(addr string, c config) {
 			time.Sleep(c.retryInterval)
 			continue
 		}
-		addr := remoteAddr(conn)
-		log.Infof("connected to %s", addr)
+		log.Infof("connected to %s", remoteAddr(conn))
 		r := bufio.NewReader(conn)
 		for {
 			conn.SetDeadline(time.Now().Add(c.timeout))
@@ -114,7 +112,7 @@ func send(addr string, c config) {
 				log.Errorln(err)
 				break
 			}
-			fmt.Printf("%s <-- %s", addr, msg)
+			fmt.Printf("%s <-- %s", remoteAddr(conn), msg)
 			i++
 			time.Sleep(c.sendInterval)
 		}
