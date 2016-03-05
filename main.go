@@ -30,7 +30,7 @@ func main() {
 	flag.StringVar(&laddr, "a", "", "listening address")
 	flag.DurationVar(&c.timeout, "t", 5*time.Second, "connect/send/recv timeout")
 	flag.DurationVar(&c.retryInterval, "r", 1*time.Second, "connection retry interval")
-	flag.DurationVar(&c.sendInterval, "i", 1*time.Second, "message sending interval")
+	flag.DurationVar(&c.sendInterval, "i", 2*time.Second, "message sending interval")
 	flag.Parse()
 	addrs := flag.Args()
 
