@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"strings"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
@@ -24,12 +25,15 @@ func main() {
 		laddr string
 		c     config
 	)
+
 	hostname, err := os.Hostname()
 	if err != nil {
 		log.Fatal(err)
 	}
+	parts := strings.Split(hostname, ".")
+
 	flag.StringVar(&laddr, "l", "", "listening address")
-	flag.StringVar(&c.msg, "m", hostname, "message to send")
+	flag.StringVar(&c.msg, "m", parts[0], "message to send")
 	flag.DurationVar(&c.timeout, "t", 5*time.Second, "connect/send/recv timeout")
 	flag.DurationVar(&c.retryInterval, "r", 1*time.Second, "connection retry interval")
 	flag.DurationVar(&c.sendInterval, "i", 1*time.Second, "message sending interval")
