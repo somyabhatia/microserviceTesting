@@ -75,7 +75,9 @@ func recv(conn net.Conn, c config) {
 	r := bufio.NewReader(conn)
 	for {
 		conn.SetDeadline(time.Now().Add(c.timeout))
-		msg, err := r.ReadString('\n')
+		s, err := r.ReadString('\n')
+		parts := strings.Split(s, "\n")
+		msg := parts[0]
 		if err != nil {
 			log.Errorln(err)
 			break
@@ -84,7 +86,7 @@ func recv(conn net.Conn, c config) {
 			log.Errorln(err)
 			break
 		}
-		fmt.Printf("%s --> %s", remoteAddr(conn), msg)
+		fmt.Printf("%s <-- %s\n", msg, remoteAddr(conn))
 	}
 	conn.Close()
 }
@@ -102,8 +104,8 @@ func send(addr string, c config) {
 		r := bufio.NewReader(conn)
 		for {
 			conn.SetDeadline(time.Now().Add(c.timeout))
-			msg := fmt.Sprintf("%d\n", i)
-			if _, err := conn.Write([]byte(msg)); err != nil {
+			msg := fmt.Sprintf("%d", i)
+			if _, err := conn.Write([]byte(msg + "\n")); err != nil {
 				log.Errorln(err)
 				break
 			}
@@ -112,7 +114,7 @@ func send(addr string, c config) {
 				log.Errorln(err)
 				break
 			}
-			fmt.Printf("%s <-- %s", remoteAddr(conn), msg)
+			fmt.Printf("%s --> %s\n", msg, remoteAddr(conn))
 			i++
 			time.Sleep(c.sendInterval)
 		}
