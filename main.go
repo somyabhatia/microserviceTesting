@@ -77,11 +77,11 @@ func recv(conn net.Conn, c config) {
 			log.Errorln(err)
 			break
 		}
-		fmt.Print(msg)
 		if _, err := conn.Write([]byte("\n")); err != nil {
 			log.Errorln(err)
 			break
 		}
+		fmt.Printf("%s --> %s", conn.RemoteAddr(), msg)
 	}
 	conn.Close()
 }
@@ -99,7 +99,8 @@ func send(addr string, c config) {
 		r := bufio.NewReader(conn)
 		for {
 			conn.SetDeadline(time.Now().Add(c.timeout))
-			if _, err := conn.Write([]byte(fmt.Sprintf("%s %d\n", c.msg, i))); err != nil {
+			msg := fmt.Sprintf("%s %d\n", c.msg, i)
+			if _, err := conn.Write([]byte(msg)); err != nil {
 				log.Errorln(err)
 				break
 			}
@@ -108,6 +109,7 @@ func send(addr string, c config) {
 				log.Errorln(err)
 				break
 			}
+			fmt.Printf("%s <-- %s", conn.RemoteAddr(), msg)
 			i++
 			time.Sleep(c.sendInterval)
 		}
