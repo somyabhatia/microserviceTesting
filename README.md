@@ -23,6 +23,11 @@ identical and a neat little example to play with in order to
 familiarize yourself with
 [Weave Scope](https://www.weave.works/products/weave-scope/).
 
+Simply run it with
+
+    docker-compose -f docker-compose-weavesock.yml up
+
+
 Here are a few things to try, all using Weave Scope
 
 1. understand the app architecture by looking at the toplogy shown
