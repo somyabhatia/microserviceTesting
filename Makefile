@@ -15,4 +15,5 @@ clean:
 	docker rmi -f $(IMAGE) 2>/dev/null || true
 
 publish:
+	docker login -u $(DOCKER_USER) -p $(DOCKER_PASS)
 	docker push $(IMAGE)
