@@ -1,6 +1,6 @@
 .PHONY: all image clean publish
 
-IMAGE=microservices-demo/micro-sock
+IMAGE=weaveworksdemos/micro-sock
 
 all: image
 
