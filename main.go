@@ -5,11 +5,28 @@ import (
 	"flag"
 	"fmt"
 	"net"
+	"net/http"
 	"os"
 	"strings"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/prometheus/client_golang/prometheus"
+)
+
+var (
+	connectionFailedCounter = prometheus.NewCounter(prometheus.CounterOpts{
+		Name: "num_failed_connections",
+		Help: "Number of failed connections.",
+	})
+	dataRecievedCounter = prometheus.NewCounter(prometheus.CounterOpts{
+		Name: "num_msgs_recieved",
+		Help: "Number of messages recieved.",
+	})
+	dataSentCounter = prometheus.NewCounter(prometheus.CounterOpts{
+		Name: "num_msgs_sent",
+		Help: "Number of messages sent.",
+	})
 )
 
 type config struct {
@@ -20,6 +37,10 @@ type config struct {
 
 func main() {
 	log.SetOutput(os.Stderr)
+	prometheus.MustRegister(connectionFailedCounter)
+	prometheus.MustRegister(dataRecievedCounter)
+	prometheus.MustRegister(dataSentCounter)
+
 	var (
 		listen bool
 		laddr  string
@@ -48,7 +69,8 @@ func main() {
 		go send(normalizeAddr(addr), c)
 	}
 
-	select {}
+	http.Handle("/metrics", prometheus.Handler())
+	log.Fatal(http.ListenAndServe(":8081", nil))
 }
 
 func normalizeAddr(addr string) string {
@@ -64,6 +86,7 @@ func accept(ln net.Listener, c config) {
 		conn, err := ln.Accept()
 		if err != nil {
 			log.Errorf("accept failed: %s", err)
+			connectionFailedCounter.Inc()
 			continue
 		}
 		go recv(conn, c)
@@ -87,6 +110,7 @@ func recv(conn net.Conn, c config) {
 			break
 		}
 		fmt.Printf("%s <-- %s\n", msg, remoteAddr(conn))
+		dataRecievedCounter.Inc()
 	}
 	conn.Close()
 }
@@ -117,6 +141,7 @@ func send(addr string, c config) {
 			fmt.Printf("%s --> %s\n", msg, remoteAddr(conn))
 			i++
 			time.Sleep(c.sendInterval)
+			dataSentCounter.Inc()
 		}
 		conn.Close()
 	}
