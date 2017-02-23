@@ -5,7 +5,8 @@ services:
 go:
 - 1.7
 before_install:
-- go get -u github.com/Sirupsen/logrus
+- go get -u github.com/FiloSottile/gvt
+- gvt restore
 install: true
 env:
 - GROUP=weaveworksdemos COMMIT=$TRAVIS_COMMIT TAG=$TRAVIS_TAG REPO=micro-sock;
