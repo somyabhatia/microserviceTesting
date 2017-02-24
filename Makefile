@@ -5,7 +5,7 @@ IMAGE=weaveworksdemos/micro-sock
 all: image
 
 micro-sock: main.go
-	go build -tags netgo
+	env GOOS=linux GOARCH=amd64 go build -tags netgo
 
 image: Dockerfile micro-sock
 	docker build -t $(IMAGE) .
