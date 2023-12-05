@@ -1,4 +1,4 @@
-# Micro-sock - dummy microservice
+# DEPRECATED: Micro-sock - dummy microservice
 
 A tiny golang application simulating a microservice. It
 
