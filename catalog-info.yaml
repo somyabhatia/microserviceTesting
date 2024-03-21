@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: microserviceTesting
+  annotations:
+    github.com/project-slug: somyabhatia/microserviceTesting
+spec:
+  type: other
+  lifecycle: unknown
+  owner: guests
